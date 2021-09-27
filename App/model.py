@@ -46,7 +46,7 @@ def newCatalog():
     catalog = {'Artists': None,
                 'Artworks': None}
 
-    #catalog['Artists'] = 
+    #catalog['Artists'] = mp.newMap(768, )
 
 # Funciones para agregar informacion al catalogo
 
