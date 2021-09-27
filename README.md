@@ -1,3 +1,7 @@
+Req 2 - María Alejandra Estrada García, 202021060, m.estradag@uniandes.edu.co 
+
+Req 3 - Santiago Martínez Novoa, 202112020, s.martinezn@uniandes.edu.co
+
 #ISIS1225 - Librerias de soporte
 
 Este proyecto contiene los Tipos abstractos de datos, estructuras de datos y algoritmos requeridos por el curso ISIS1225-Estructuras de Datos y Algoritmos
