@@ -20,12 +20,16 @@
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
 
+from typing import List
 import config as cf
 import sys
 import controller
-from model import Artistinfo
 from DISClib.ADT import list as lt
 assert cf
+import time
+
+defaul_time = 1000
+sys.setrecursionlimit(defaul_time*10)
 
 
 """
@@ -55,15 +59,23 @@ while True:
         print("Cargando información de los archivos ....")
         #listType = input('Ingrese el tipo de lista que quiere implementar (ARRAY_LIST o LINKED_LIST): ').upper()
         catalog = controller.initCatalog()
-
-        #controller.loadData(catalog)
+        controller.loadData(catalog)
+        print(catalog)
         
         
         
         
     elif int(inputs[0]) == 2:
-        
-        pass
+        medium = input("Buscando obras de arte con que medio?: ")
+        artws = controller.getArtworksMedium(catalog, medium)
+        if(artws):
+            print('Se encontraron: ' + str(lt.size(artws)) + ' obras de arte')
+        for artw in lt.iterator(artws):
+            print(artw['Title'])
+            print("\n")
+        else:
+            print("No se encontraron libros.\n")
+            pass
     else:
         sys.exit(0)
 sys.exit(0)
