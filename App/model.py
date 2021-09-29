@@ -29,6 +29,7 @@ import config as cf
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
+from DISClib.Algorithms.Sorting import mergesort as ms
 assert cf
 import time
 from datetime import date
@@ -52,7 +53,7 @@ def newCatalog():
                                    maptype='CHAINING',
                                    loadfactor=4.0,
                                    comparefunction=compareartworks)
-    catalog['ArtworkMedium'] = mp.newMap(40,
+    catalog['ArtworkMedium'] = mp.newMap(100,
                                  maptype='PROBING',
                                  loadfactor=0.5,
                                  comparefunction=compareArtworkMedium)
@@ -61,48 +62,74 @@ def newCatalog():
 
 # Funciones para agregar informacion al catalogo
 
-def addArtwork(catalog, artwork):
+def addArtist(catalog, artist):
+
+    listArtist = {'DisplayName': (artist['DisplayName']).lower(),
+                'ConstituentID': (artist['ConstituentID']).replace(" ", ""),
+                'BeginDate': artist['BeginDate'], 
+                'EndDate': artist['EndDate'],
+                'Nationality': (artist['Nationality']).lower(),
+                'Gender': artist['Gender']} 
     
-    lt.addLast(catalog['Artworks'], artwork)
-    mp.put(catalog['ArtworkIds'], artwork['ObjectID'], artwork)
-    #artists = artwork['Artists'].split(",")  # Se obtienen los autores
-    #for artist in artists:
-        #addBookAuthor(catalog, artist.strip(), book)
-    addArtworkMedium(catalog, artwork) 
+    lt.addLast(catalog['Artists'], listArtist)
+
+def addArtwork(catalog, artwork):
+
+    listArtwork = {'ObjectID': (artwork['ObjectID']).replace(" ", ""), 
+                  'Title': (artwork['Title']).lower(),
+                  'ConstituentID': (artwork['ConstituentID']).replace(" ", ""),
+                  'Date': artwork['Date'],
+                  'Medium': (artwork['Medium']).lower(),
+                  'Dimensions': artwork['Dimensions'],
+                  'CreditLine': (artwork['CreditLine']).lower(),
+                  'Classification': (artwork['Classification']).lower(),
+                  'Department': (artwork['Department']).lower(),
+                  'DateAcquired': artwork['DateAcquired'],
+                  'URL': artwork['URL'],
+                  'Circumference': artwork['Circumference (cm)'],
+                  'Depth': artwork['Depth (cm)'],
+                  'Diameter': artwork['Diameter (cm)'],
+                  'Height': artwork['Height (cm)'],
+                  'Length': artwork['Length (cm)'],
+                  'Weight': artwork['Weight (kg)'],
+                  'Width': artwork['Width (cm)']}
+    lt.addLast(catalog['Artwork'], listArtwork)
+    artistsID = listArtwork['ConstituentID']
+    artistsID = eval(artistsID)
+    addArtworkMedium(catalog, listArtwork['Medium'], artwork)
 
 
-def newMedium(medartwork):
-    """
-    Esta funcion crea la estructura de libros asociados
-    a un año.
-    """
-    entry = {'Medium': "", "Artworks": None}
-    entry['Medium'] = medartwork
-    entry['Artworks'] = lt.newList('SINGLE_LINKED', compareArtworkMedium)
-    return entry
-def addArtworkMedium(catalog, artwork):
-    """
-    Esta funcion adiciona un libro a la lista de libros que
-    fueron publicados en un año especifico.
-    Los años se guardan en un Map, donde la llave es el año
-    y el valor la lista de libros de ese año.
-    """
-    try:
-        meme = catalog['Medium']
-        if (artwork['Medium'] != ''):
-            medartwork = artwork['Medium']
-        else:
-            medartwork = "Unknown"
-        existmedium = mp.contains(meme, medartwork)
-        if existmedium:
-            entry = mp.get(meme, medartwork)
-            medium = me.getValue(entry)
-        else:
-            medium = newMedium(medartwork)
-            mp.put(meme, medartwork, medium)
-        lt.addLast(medium['Medium'], artwork)
-    except Exception:
-        return None
+
+def addArtworkMedium(catalog, mediumName, artwork):
+
+    ArtworkFiltrada = {'ObjectID': (artwork['ObjectID']).replace(" ", ""), 
+                  'Title': (artwork['Title']).lower(),
+                  'ConstituentID': (artwork['ConstituentID']).replace(" ", ""),
+                  'Date': artwork['Date'],
+                  'Medium': (artwork['Medium']).lower(),}
+    
+    mediums = catalog['ArtworkMedium']
+    existmedium = mp.contains(mediums, mediumName)
+    if existmedium:
+        entry = mp.get(mediums, mediumName)
+        medium = me.getValue(entry)
+    else:
+        medium = newMedium()
+        mp.put(mediums, mediumName, medium)
+    lt.addLast(medium['Artworks'], ArtworkFiltrada)
+ 
+
+# Funciones de consulta
+
+#Opcion2:
+def getArtworksMedium(catalog, medium):
+    medium = mp.get(catalog['ArtworkMedium'], medium)
+    if medium:
+        list_artworks= me.getValue(medium)
+        sortByYears(list_artworks['Artworks'])
+        return list_artworks['Artworks']
+    return None
+
 
 # Funciones para creacion de datos
 
@@ -124,12 +151,15 @@ def newArtistDate(artist, BeginDate, EndDate, nationality, gender):
     artistDate['Gender'] = gender
 
     return artistDate
-    
-def getArtworksMedium(catalog, medium):
-    medium = mp.get(catalog['ArtworkMedium'], medium)
-    if medium:
-        return me.getValue(medium)['Artworks']
-    return None
+
+def newMedium():
+    """
+    Esta funcion crea la estructura de libros asociados
+    a un año.
+    """
+    medium = {"Artworks": None}
+    medium['Artworks'] = lt.newList('ARRAY_LIST', compareArtworkMedium)
+    return medium
 
 
 # Funciones utilizadas para comparar elementos dentro de una lista
@@ -142,11 +172,16 @@ def compareartists(a1, a2):
         return 0
     else:
         return 1
-def compareArtworkMedium(a1,a2):
-    if a1['Medium'].lower() == a2['Medium'].lower():
+    
+def compareArtworkMedium(medium, entry):
+    mediumentry = me.getKey(entry)
+    if (medium == mediumentry):
         return 0
+    elif (medium > mediumentry):
+        return 1
     else:
         return -1 
+
 def compareartworks(a1, a2):
     if int(a1['ObjectID']) < int(a2['ObjectID']):
         return -1
@@ -162,12 +197,10 @@ def compareartistID(a1, artist):
         return -1  
 
 def compareYears(year1, year2):
-    if (int(year1) == int(year2)):
-        return 0
-    elif (int(year1) > int(year2)):
-        return 1
-    else:
-        return 0
+    return int(year1['Date']) < int(year2['Date'])
 
 # Funciones de ordenamiento
+
+def sortByYears(list_artworks):
+    return ms.sort(list_artworks, compareYears)
 

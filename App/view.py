@@ -60,22 +60,18 @@ while True:
         #listType = input('Ingrese el tipo de lista que quiere implementar (ARRAY_LIST o LINKED_LIST): ').upper()
         catalog = controller.initCatalog()
         controller.loadData(catalog)
-        print(catalog)
         
-        
-        
-        
+
     elif int(inputs[0]) == 2:
-        medium = input("Buscando obras de arte con que medio?: ")
+        medium = input("Buscando obras de arte con que medio?: ").lower()
+        n_artworks = int(input('TOP? (número): '))
         artws = controller.getArtworksMedium(catalog, medium)
-        if(artws):
-            print('Se encontraron: ' + str(lt.size(artws)) + ' obras de arte')
-        for artw in lt.iterator(artws):
-            print(artw['Title'])
-            print("\n")
-        else:
-            print("No se encontraron libros.\n")
-            pass
+        artw_sublist = lt.subList(artws, 1, n_artworks)
+        
+        print('Las ' + str(n_artworks) + ' obras más antiguas del medio ' + medium + ' son:')
+        for artws in lt.iterator(artw_sublist):
+            print(artws)
+    
     else:
         sys.exit(0)
 sys.exit(0)
