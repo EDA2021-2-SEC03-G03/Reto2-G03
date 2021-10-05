@@ -61,17 +61,19 @@ while True:
         catalog = controller.initCatalog()
         controller.loadData(catalog)
         
+        
+        
 
     elif int(inputs[0]) == 2:
         medium = input("Buscando obras de arte con que medio?: ").lower()
         n_artworks = int(input('TOP? (número): '))
         artws = controller.getArtworksMedium(catalog, medium)
+        if lt.size(artws) < n_artworks:
+            n_artworks = lt.size(artws)
         artw_sublist = lt.subList(artws, 1, n_artworks)
-        
-        print('Las ' + str(n_artworks) + ' obras más antiguas del medio ' + medium + ' son:')
+        print('Las ' + str(n_artworks) + ' obras más antiguas del medio "' + medium + '" son:')
         for artws in lt.iterator(artw_sublist):
             print(artws)
-    
     else:
         sys.exit(0)
 sys.exit(0)
