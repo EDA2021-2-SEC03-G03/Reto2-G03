@@ -80,7 +80,7 @@ def addArtist(catalog, artist):
                 'Nationality': (artist['Nationality']).lower(),
                 'Gender': artist['Gender']} 
     lt.addLast(catalog['Artists'], listArtist)
-    
+    addArtistID(catalog,listArtist['ConstituentID'],artist)
 
 def addArtwork(catalog, artwork):
 
@@ -106,7 +106,6 @@ def addArtwork(catalog, artwork):
     artistsID = listArtwork['ConstituentID']
     artistsID = eval(artistsID)
     addArtworkMedium(catalog, listArtwork['Medium'], artwork)
-    addArtistID(catalog,listArtwork['ConstituentID'],artwork)
 
 def addArtistID(catalog, constituentID, artist):
 
@@ -150,12 +149,11 @@ def getArtworksMedium(catalog, medium):
         return list_artworks['Artworks']
     return None
 
-def getArtistInArtwork(catalog, artwork):
-    artist_value = mp.get(catalog['ArtistInArtwork'], artwork)
-    print(artist_value)
+def getArtistID(catalog, artwork):
+    artist_value = mp.get(catalog['ArtistID'], artwork)
     if artist_value:
         list_artworks= me.getValue(artist_value)
-        return list_artworks['Artists']
+        return list_artworks['Artistinfo']
     return None
 # Funciones para creacion de datos
 

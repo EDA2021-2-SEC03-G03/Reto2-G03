@@ -69,7 +69,6 @@ while True:
         medium = input("Buscando obras de arte con que medio?: ").lower()
         n_artworks = int(input('TOP? (número): '))
         artws = controller.getArtworksMedium(catalog, medium)
-        model.getArtistInArtwork(catalog,"McLean's house, Appomattox Court-House, Virginia")
         if lt.size(artws) < n_artworks:
             n_artworks = lt.size(artws)
         artw_sublist = lt.subList(artws, 1, n_artworks)
