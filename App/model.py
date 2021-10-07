@@ -81,6 +81,7 @@ def addArtist(catalog, artist):
                 'Gender': artist['Gender']} 
     lt.addLast(catalog['Artists'], listArtist)
     addArtistID(catalog,listArtist['ConstituentID'],artist)
+    addArtistNationality(catalog,listArtist['Nationality'],artist)
 
 def addArtwork(catalog, artwork):
 
@@ -149,7 +150,21 @@ def addArtworkMedium(catalog, mediumName, artwork):
         mp.put(mediums, mediumName, medium)
     lt.addLast(medium['Artworks'], ArtworkFiltrada)
  
-
+def addArtistNationality(catalog,nationality,artist):
+    if nationality == None or nationality == "" or nationality == " " or nationality == "Nationality unknown" or nationality == "0":
+        nationality = "Unknown"
+    mediums = catalog['ArtworkNationality']
+    existmedium = mp.contains(mediums, nationality)
+    artworks = getArtworkofArtist(catalog,artist["ConstituentID"])
+    if existmedium:
+        entry = mp.get(mediums, nationality)
+        medium = me.getValue(entry)
+    else:
+        medium = newNationality()
+        mp.put(mediums, nationality, medium)
+    if artworks != None:
+        for artwork in lt.iterator(artworks):   
+            lt.addLast(medium['Artworks'], artwork)
 # Funciones de consulta
 
 #Opcion2:
@@ -163,7 +178,6 @@ def getArtworksMedium(catalog, medium):
 
 def getArtistID(catalog, artistID):
     artist_value = mp.get(catalog['ArtistID'], artistID)
-    print(artist_value)
     if artist_value:
         list_artworks= me.getValue(artist_value)
         return list_artworks['Artistinfo']
@@ -171,6 +185,13 @@ def getArtistID(catalog, artistID):
 
 def getArtworkofArtist(catalog, artistID):
     artist_value = mp.get(catalog['ArtworksofArtist'], artistID)
+    if artist_value:
+        list_artworks= me.getValue(artist_value)
+        return list_artworks['Artworks']
+    return None
+
+def getArtworkNationality(catalog, nationality):
+    artist_value = mp.get(catalog['ArtworkNationality'], nationality)
     print(artist_value)
     if artist_value:
         list_artworks= me.getValue(artist_value)
@@ -208,6 +229,15 @@ def newMedium():
     return medium
 
 def newArtworkofArtist():
+    """
+    Esta funcion crea la estructura de artistas asociados
+    a un ConstituentID.
+    """
+    medium = {"Artworks": None}
+    medium['Artworks'] = lt.newList('ARRAY_LIST', compareArtworkMedium)
+    return medium
+
+def newNationality():
     """
     Esta funcion crea la estructura de artistas asociados
     a un ConstituentID.
