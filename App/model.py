@@ -57,9 +57,9 @@ def newCatalog():
                                  maptype='PROBING',
                                  loadfactor=0.5,
                                  comparefunction=compareArtworkMedium)
-    catalog['ArtworkID'] = mp.newMap(34500,
-                                 maptype='PROBING',
-                                 loadfactor=0.5,
+    catalog['ArtworksofArtist'] = mp.newMap(15250,
+                                 maptype='CHAINING',
+                                 loadfactor=4.0,
                                  comparefunction=compareArtworkMedium)
     catalog['ArtworkNationality'] = mp.newMap(300,
                                  maptype='CHAINING',
@@ -103,8 +103,9 @@ def addArtwork(catalog, artwork):
                   'Weight': artwork['Weight (kg)'],
                   'Width': artwork['Width (cm)']}
     lt.addLast(catalog['Artwork'], listArtwork)
-    artistsID = listArtwork['ConstituentID']
-    artistsID = eval(artistsID)
+    list_tutu = artwork["ConstituentID"].replace("[","").replace("]","").replace(" ","").split(",")
+    for artist in list_tutu:
+        addArtworkofArtist(catalog, artist,artwork)
     addArtworkMedium(catalog, listArtwork['Medium'], artwork)
 
 def addArtistID(catalog, constituentID, artist):
@@ -117,7 +118,18 @@ def addArtistID(catalog, constituentID, artist):
     else:
         medium = newArtistid()
         mp.put(mediums, constituentID, medium)
-    lt.addLast(medium['Artistinfo'], artist)
+    medium['Artistinfo'] = artist
+
+def addArtworkofArtist(catalog,artist,artwork):
+    mediums = catalog['ArtworksofArtist']
+    existmedium = mp.contains(mediums, artist)
+    if existmedium:
+        entry = mp.get(mediums, artist)
+        medium = me.getValue(entry)
+    else:
+        medium = newArtworkofArtist()
+        mp.put(mediums, artist, medium)
+    lt.addLast(medium['Artworks'], artwork)
 
 def addArtworkMedium(catalog, mediumName, artwork):
 
@@ -149,11 +161,20 @@ def getArtworksMedium(catalog, medium):
         return list_artworks['Artworks']
     return None
 
-def getArtistID(catalog, artwork):
-    artist_value = mp.get(catalog['ArtistID'], artwork)
+def getArtistID(catalog, artistID):
+    artist_value = mp.get(catalog['ArtistID'], artistID)
+    print(artist_value)
     if artist_value:
         list_artworks= me.getValue(artist_value)
         return list_artworks['Artistinfo']
+    return None
+
+def getArtworkofArtist(catalog, artistID):
+    artist_value = mp.get(catalog['ArtworksofArtist'], artistID)
+    print(artist_value)
+    if artist_value:
+        list_artworks= me.getValue(artist_value)
+        return list_artworks['Artworks']
     return None
 # Funciones para creacion de datos
 
@@ -179,19 +200,28 @@ def newArtistDate(artist, BeginDate, EndDate, nationality, gender):
 
 def newMedium():
     """
-    Esta funcion crea la estructura de libros asociados
-    a un año.
+    Esta funcion crea la estructura de obras de arte asociados
+    a un medio.
     """
     medium = {"Artworks": None}
     medium['Artworks'] = lt.newList('ARRAY_LIST', compareArtworkMedium)
     return medium
+
+def newArtworkofArtist():
+    """
+    Esta funcion crea la estructura de artistas asociados
+    a un ConstituentID.
+    """
+    medium = {"Artworks": None}
+    medium['Artworks'] = lt.newList('ARRAY_LIST', compareArtworkMedium)
+    return medium
+
 def newArtistid():
     """
     Esta funcion crea la estructura de libros asociados
     a un año.
     """
     medium = {"Artistinfo": None}
-    medium['Artistinfo'] = lt.newList('ARRAY_LIST', compareArtworkMedium)
     return medium
 
 # Funciones utilizadas para comparar elementos dentro de una lista
