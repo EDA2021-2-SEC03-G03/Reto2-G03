@@ -92,6 +92,10 @@ def loadArtworks(catalog):
     for artwork in input_file:
         model.addArtwork(catalog, artwork)
         
-def getArtworksMedium(catalog, medium):
-     artworks = model.getArtworksMedium(catalog, medium)
-     return artworks
+#def getArtworksMedium(catalog, medium):
+     #artworks = model.getArtworksMedium(catalog, medium)
+     #return artworks
+
+#Req 1
+def getArtistByDate(catalog, anoInicial, anoFinal):
+    return model.getArtistByDate(catalog, anoInicial, anoFinal)

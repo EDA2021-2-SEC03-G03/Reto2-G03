@@ -167,7 +167,7 @@ def addArtistNationality(catalog,nationality,artist):
             lt.addLast(medium['Artworks'], artwork)
 # Funciones de consulta
 
-#Opcion2:
+#Lab 5:
 def getArtworksMedium(catalog, medium):
     medium = mp.get(catalog['ArtworkMedium'], medium)
     if medium:
@@ -189,6 +189,12 @@ def getArtworkofArtist(catalog, artistID):
         list_artworks= me.getValue(artist_value)
         return list_artworks['Artworks']
     return None
+
+#Req 1
+def getArtistByDate(catalog, anoInicial, anoFinal):
+    
+    pass 
+
 
 def getArtworkNationality(catalog, nationality):
     artist_value = mp.get(catalog['ArtworkNationality'], nationality)
