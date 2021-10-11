@@ -76,7 +76,7 @@ def loadArtists(catalog):
     """
     Carga todos los tags del archivo y los agrega a la lista de tags
     """
-    artistsfile = cf.data_dir + 'MoMA (1)/Artists-utf8-small.csv'
+    artistsfile = cf.data_dir + 'MoMA/Artists-utf8-small.csv'
     input_file = csv.DictReader(open(artistsfile, encoding='utf-8'))
     for artist in input_file:
         model.addArtist(catalog, artist)
@@ -87,14 +87,17 @@ def loadArtworks(catalog):
     cada uno de ellos, se crea en la lista de autores, a dicho autor y una
     referencia al libro que se esta procesando.
     """
-    artworksfile = cf.data_dir + 'MoMa (1)/Artworks-utf8-small.csv'
+    artworksfile = cf.data_dir + 'MoMa/Artworks-utf8-small.csv'
     input_file = csv.DictReader(open(artworksfile, encoding='utf-8')) 
     for artwork in input_file:
         model.addArtwork(catalog, artwork)
         
-#def getArtworksMedium(catalog, medium):
-     #artworks = model.getArtworksMedium(catalog, medium)
-     #return artworks
+def getArtworksMedium(catalog, medium):
+     artworks = model.getArtworksMedium(catalog, medium)
+     return artworks
+
+def getArtworksNationality(catalog, nationality):
+    return model.getArtworkNationality(catalog, nationality)
 
 #Req 1
 def getArtistByDate(catalog, anoInicial, anoFinal):

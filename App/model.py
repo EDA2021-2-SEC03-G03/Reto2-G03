@@ -61,6 +61,10 @@ def newCatalog():
                                  maptype='CHAINING',
                                  loadfactor=4.0,
                                  comparefunction=compareArtworkMedium)
+    catalog['ArtistsDates'] = mp.newMap(10000,
+                                 maptype='PROBING',
+                                 loadfactor=0.5,
+                                 comparefunction=cmpArtistsDate)
     catalog['ArtworkNationality'] = mp.newMap(300,
                                  maptype='CHAINING',
                                  loadfactor=4.0,
@@ -140,7 +144,7 @@ def addArtworkMedium(catalog, mediumName, artwork):
                   'Date': artwork['Date'],
                   'Medium': (artwork['Medium']).lower(),}
     
-    mediums = catalog['ArtworkMedium']
+    mediums = catalog['ArtistsDates']
     existmedium = mp.contains(mediums, mediumName)
     if existmedium:
         entry = mp.get(mediums, mediumName)
@@ -149,6 +153,26 @@ def addArtworkMedium(catalog, mediumName, artwork):
         medium = newMedium()
         mp.put(mediums, mediumName, medium)
     lt.addLast(medium['Artworks'], ArtworkFiltrada)
+
+def addArtistDate(catalog, beginDate, artists):
+    ArtistFiltrada = {'DisplayName': artists['DisplayName'], 
+                'ConstituentID': (artists['ConstituentID']).replace(" ", ""),
+                'BeginDate': artists['BeginDate'], 
+                'EndDate': artists['EndDate'],
+                'Nationality': (artists['Nationality']).lower(),
+                'Gender': artists['Gender']}
+    
+    
+    dates = catalog['ArtworkMedium']
+    existdate = mp.contains(dates, beginDate)
+    if existdate:
+        entry = mp.get(dates, beginDate)
+        d = me.getValue(entry)
+    else:
+        d = newArtistDate()
+        mp.put(dates, beginDate, d)
+    lt.addLast(d['Artist'], ArtistFiltrada)
+
  
 def addArtistNationality(catalog,nationality,artist):
     if nationality == None or nationality == "" or nationality == " " or nationality == "Nationality unknown" or nationality == "0":
@@ -167,7 +191,7 @@ def addArtistNationality(catalog,nationality,artist):
             lt.addLast(medium['Artworks'], artwork)
 # Funciones de consulta
 
-#Lab 5:
+#Lab 6:
 def getArtworksMedium(catalog, medium):
     medium = mp.get(catalog['ArtworkMedium'], medium)
     if medium:
@@ -192,17 +216,30 @@ def getArtworkofArtist(catalog, artistID):
 
 #Req 1
 def getArtistByDate(catalog, anoInicial, anoFinal):
+    start_time = time.process_time()
     
-    pass 
+    list_artistDate = lt.newList('ARRAY_LIST', )
+    for a in catalog['ArtistsDates']:
+        if int(a['BeginDate']) >= anoInicial and int(a['BeginDate']) <= anoFinal and a['BeginDate'] != "" and a['BeginDate'] != 0:
+                lt.addLast(list_artistDate, a)
 
 
+    stop_time = time.process_time()
+    elapsed_time_mseg = (stop_time - start_time)*1000        
+    return list_artistDate, elapsed_time_mseg
+      
+#Lab 6:
 def getArtworkNationality(catalog, nationality):
     artist_value = mp.get(catalog['ArtworkNationality'], nationality)
-    print(artist_value)
+    #print(artist_value)
     if artist_value:
         list_artworks= me.getValue(artist_value)
         return list_artworks['Artworks']
     return None
+
+
+
+
 # Funciones para creacion de datos
 
 def newArtist(artistid):
@@ -233,6 +270,11 @@ def newMedium():
     medium = {"Artworks": None}
     medium['Artworks'] = lt.newList('ARRAY_LIST', compareArtworkMedium)
     return medium
+
+def newArtistDate():
+    Date = {"Artists": None}
+    Date['Artists'] = lt.newList('ARRAY_LIST', compareArtworkMedium)
+    return Date
 
 def newArtworkofArtist():
     """
@@ -296,6 +338,12 @@ def compareartistID(a1, artist):
 
 def compareYears(year1, year2):
     return int(year1['Date']) < int(year2['Date'])
+
+def cmpArtistsDate(date1, date):
+    if str(date1) in str(date['BeginDate']):
+        return 0
+    else:
+        return -1
 
 # Funciones de ordenamiento
 

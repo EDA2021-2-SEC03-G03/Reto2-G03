@@ -43,9 +43,10 @@ operación solicitada
 def printMenu():
     print("Bienvenido")
     print("1- Cargar información en el catálogo")
-    #print("2- Las obras más antiguas para un medio específico")
-    print("2- Lista cronológica de los artistas")
-    print("3- Lista cronológica de adquisiciones")
+    print("2- Las obras más antiguas para un medio específico")
+    print("3 - Las obras más antiguas por una nacionalidad en específico")
+    #print("2- Lista cronológica de los artistas")
+    #print("3- Lista cronológica de adquisiciones")
     print("4- Calsificación de obras de un artista por técnica")
     print("5- Clasificar obras por la nacionalidad de sus creadores")
     print("6- Transporte de obras de un departamento")
@@ -70,26 +71,36 @@ while True:
         
         
 
-    #elif int(inputs[0]) == 2:
-        #medium = input("Buscando obras de arte con que medio?: ").lower()
-        #n_artworks = int(input('TOP? (número): '))
-        #artws = controller.getArtworksMedium(catalog, medium)
-        #model.getArtworkNationality(catalog, " ")
-        #if lt.size(artws) < n_artworks:
-            #n_artworks = lt.size(artws)
-        #artw_sublist = lt.subList(artws, 1, n_artworks)
-        #print('Las ' + str(n_artworks) + ' obras más antiguas del medio "' + medium + '" son:')
-        #for artws in lt.iterator(artw_sublist):
-            #print(artws)
-
     elif int(inputs[0]) == 2:
+        medium = input("Buscando obras de arte con que medio?: ").lower()
+        n_artworks = int(input('TOP? (número): '))
+        artws = controller.getArtworksMedium(catalog, medium)
+        model.getArtworkNationality(catalog, " ")
+        if lt.size(artws) < n_artworks:
+            n_artworks = lt.size(artws)
+        artw_sublist = lt.subList(artws, 1, n_artworks)
+        print('Las ' + str(n_artworks) + ' obras más antiguas del medio "' + medium + '" son:')
+        for artws in lt.iterator(artw_sublist):
+            print(artws)
+
+    #elif int(inputs[0]) == 2:
 
         #Req 1
-        anoInicial = int(input('Ingresa el año inicial del rango: '))
-        anoFinal = int(input('Ingrese el año final del rango: '))
-        DatesA = controller.getArtistByDate(catalog, anoInicial, anoFinal)
+        #anoInicial = int(input('Ingresa el año inicial del rango: '))
+        #anoFinal = int(input('Ingrese el año final del rango: '))
+        #DatesA = controller.getArtistByDate(catalog, anoInicial, anoFinal)
         
-
+    elif int(inputs[0]) == 3:
+        nat = input("Buscando obras de arte con que nacionalidad?: ").lower()
+        n_artworks = int(input('TOP? (número): '))
+        artws = controller.getArtworksNationality(catalog, nat)
+        model.getArtworkNationality(catalog, " ")
+        if lt.size(artws) < n_artworks:
+            n_artworks = lt.size(artws)
+        artw_sublist = lt.subList(artws, 1, n_artworks)
+        print('Las ' + str(n_artworks) + ' obras más antiguas del medio "' + medium + '" son:')
+        for artws in lt.iterator(artw_sublist):
+            print(artws)
 
     else:
         sys.exit(0)
