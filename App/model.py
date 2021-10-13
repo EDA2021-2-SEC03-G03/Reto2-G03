@@ -64,7 +64,7 @@ def newCatalog():
     catalog['ArtistsDates'] = mp.newMap(10000,
                                  maptype='PROBING',
                                  loadfactor=0.5,
-                                 comparefunction=cmpArtistsDate)
+                                 comparefunction=compareArtworkMedium)
     catalog['ArtworkNationality'] = mp.newMap(300,
                                  maptype='CHAINING',
                                  loadfactor=4.0,
@@ -112,7 +112,7 @@ def addArtwork(catalog, artwork):
     for artist in list_tutu:
         addArtworkofArtist(catalog, artist,artwork)
     addArtworkMedium(catalog, listArtwork['Medium'], artwork)
-
+    
 def addArtistID(catalog, constituentID, artist):
 
     mediums = catalog['ArtistID']
@@ -144,7 +144,7 @@ def addArtworkMedium(catalog, mediumName, artwork):
                   'Date': artwork['Date'],
                   'Medium': (artwork['Medium']).lower(),}
     
-    mediums = catalog['ArtistsDates']
+    mediums = catalog['ArtworkMedium']
     existmedium = mp.contains(mediums, mediumName)
     if existmedium:
         entry = mp.get(mediums, mediumName)
@@ -153,7 +153,6 @@ def addArtworkMedium(catalog, mediumName, artwork):
         medium = newMedium()
         mp.put(mediums, mediumName, medium)
     lt.addLast(medium['Artworks'], ArtworkFiltrada)
-
 def addArtistDate(catalog, beginDate, artists):
     ArtistFiltrada = {'DisplayName': artists['DisplayName'], 
                 'ConstituentID': (artists['ConstituentID']).replace(" ", ""),
@@ -161,9 +160,7 @@ def addArtistDate(catalog, beginDate, artists):
                 'EndDate': artists['EndDate'],
                 'Nationality': (artists['Nationality']).lower(),
                 'Gender': artists['Gender']}
-    
-    
-    dates = catalog['ArtworkMedium']
+    dates = catalog['ArtistDates']
     existdate = mp.contains(dates, beginDate)
     if existdate:
         entry = mp.get(dates, beginDate)
