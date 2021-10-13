@@ -228,13 +228,10 @@ def getArtistByDate(catalog, anoInicial, anoFinal):
 #Lab 6:
 def getArtworkNationality(catalog, nationality):
     artist_value = mp.get(catalog['ArtworkNationality'], nationality)
-    #print(artist_value)
     if artist_value:
         list_artworks= me.getValue(artist_value)
         return list_artworks['Artworks']
     return None
-
-
 
 
 # Funciones para creacion de datos

@@ -66,9 +66,11 @@ while True:
         print("Cargando información de los archivos ....")
         #listType = input('Ingrese el tipo de lista que quiere implementar (ARRAY_LIST o LINKED_LIST): ').upper()
         catalog = controller.initCatalog()
+        start_time = time.process_time()
         controller.loadData(catalog)
-        
-        
+        stop_time = time.process_time()
+        elapsed_time_mseg = (stop_time - start_time)*1000
+        print("El tiempo utilizado es de: "+str(elapsed_time_mseg)+ " milisegundos")
         
 
     elif int(inputs[0]) == 2:
@@ -91,8 +93,6 @@ while True:
         #DatesA = controller.getArtistByDate(catalog, anoInicial, anoFinal)
         
     elif int(inputs[0]) == 3:
-        nat = input("Buscando obras de arte con que nacionalidad?: ").lower()
-        n_artworks = int(input('TOP? (número): '))
         artws = controller.getArtworksNationality(catalog, nat)
         model.getArtworkNationality(catalog, " ")
         if lt.size(artws) < n_artworks:
