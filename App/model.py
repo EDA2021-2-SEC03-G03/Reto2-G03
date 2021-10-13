@@ -49,7 +49,7 @@ def newCatalog():
 
     catalog['Artists'] = lt.newList(cmpfunction=compareartists) 
     catalog['Artwork'] = lt.newList(cmpfunction=compareartworks)
-    catalog['ArtworkMedium'] = mp.newMap(10000,
+    catalog['ArtworkMedium'] = mp.newMap(8000,
                                  maptype='CHAINING',
                                  loadfactor=4.0,
                                  comparefunction=compareArtworkMedium)
@@ -65,11 +65,10 @@ def newCatalog():
                                  maptype='PROBING',
                                  loadfactor=0.5,
                                  comparefunction=compareArtworkMedium)
-    catalog['ArtworkNationality'] = mp.newMap(300,
+    catalog['ArtworkNationality'] = mp.newMap(200,
                                  maptype='CHAINING',
                                  loadfactor=4.0,
                                  comparefunction=compareArtworkMedium)
-                            
 
     return catalog
 
