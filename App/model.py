@@ -70,6 +70,10 @@ def newCatalog():
                                  maptype='CHAINING',
                                  loadfactor=4.0,
                                  comparefunction=compareArtworkMedium)
+    catalog['ArtworkDepartment'] = mp.newMap(8000,
+                                 maptype='CHAINING',
+                                 loadfactor=4.0,
+                                 comparefunction=compareArtworkMedium)
 
     return catalog
 
@@ -112,6 +116,7 @@ def addArtwork(catalog, artwork):
     for artist in list_tutu:
         addArtworkofArtist(catalog, artist,artwork)
     addArtworkMedium(catalog, listArtwork['Medium'], artwork)
+    addArtworkDepartment(catalog, listArtwork['Department'], artwork)
     
 def addArtistID(catalog, constituentID, artist):
 
@@ -153,6 +158,25 @@ def addArtworkMedium(catalog, mediumName, artwork):
         medium = newMedium()
         mp.put(mediums, mediumName, medium)
     lt.addLast(medium['Artworks'], ArtworkFiltrada)
+
+def addArtworkDepartment(catalog, departmentName, artwork):
+
+    ArtworkFiltrada = {'ObjectID': (artwork['ObjectID']).replace(" ", ""), 
+                  'Title': (artwork['Title']).lower(),
+                  'ConstituentID': (artwork['ConstituentID']).replace(" ", ""),
+                  'Date': artwork['Date'],
+                  'Medium': (artwork['Medium']).lower(),}
+    
+    mediums = catalog['ArtworkDepartment']
+    existmedium = mp.contains(mediums, departmentName)
+    if existmedium:
+        entry = mp.get(mediums, departmentName)
+        medium = me.getValue(entry)
+    else:
+        medium = newDepartment()
+        mp.put(mediums, departmentName, medium)
+    lt.addLast(medium['Artworks'], ArtworkFiltrada)
+
 def addArtistDate(catalog, beginDate, artists):
     ArtistFiltrada = {'DisplayName': artists['DisplayName'], 
                 'ConstituentID': (artists['ConstituentID']).replace(" ", ""),
@@ -257,6 +281,67 @@ def unknowncorrection(nationality_pop):
     lt.addLast(nationality_pop, tuple_corr)
     return None
 #-------------------------------------------------------------------------------------------------------------------------
+
+#Req5
+#-------------------------------------------------------------------------------------------------------------------------
+def getArtworksByDepartment(catalog, department):
+    start_time = time.process_time()
+    artist_value = mp.get(catalog['ArtworkDepartment'], department)
+    if artist_value:
+        list_artworks= me.getValue(artist_value)
+        print(list_artworks)
+        listaconprecio = precioest(list_artworks)
+        pesoestim = pesoest(list_artworks, "Weight")
+        print(listaconprecio)
+        precioestim = pesoest(list_artworks, "Price")
+        sorted_listbyprice = ms.sort(listaconprecio, compareprice)
+        artworkingsub = lt.subList(listaconprecio,1, lt.size(list_artworks))
+        sorted_listbyage = ms.sort(artworkingsub, compareage)
+        stop_time = time.process_time()
+        elapsed_time_mseg = (stop_time - start_time)*1000
+        
+        return sorted_listbyprice, sorted_listbyage, pesoestim, precioestim, elapsed_time_mseg
+    
+    return None   
+
+    
+     
+def precioest(ArtworkinCategory):
+    
+    for artworks in lt.iterator(ArtworkinCategory):
+        if artworks["Weight"] == '':
+            porPeso = 0
+        else:
+            porPeso = round(72 * float(artworks["Weight"]),4)
+        if (artworks["Height"] == '' or artworks["Width"] == '') and artworks["Diameter"] == '':
+            porArea = 0
+        elif artworks["Diameter"] != '':
+            radius = float(artworks["Diameter"])/200
+            porArea = round((radius)**2*(3.1415)*72, 4)
+        else: 
+            porArea = round(((float(artworks["Height"])*float(artworks["Width"]))/ 10000)*72,4)
+        if (artworks["Height"] == '' or artworks["Width"] == '' or artworks["Length"] == ''):
+            porVol = 0
+        else:
+            porVol = round(((float(artworks["Height"])*float(artworks["Width"])*float(artworks["Length"]))/ 1000000)*72,4)
+
+        if porVol == 0 and porArea == 0 and porPeso == 0:
+            precio_final = 48
+        else:
+            precio_final = max(porPeso,porArea,porVol)
+        artworks['Price'] = precio_final
+    return ArtworkinCategory
+
+def pesoest(ArtworkinCategory, category):
+    suma = 0
+    for artworks in lt.iterator(ArtworkinCategory):
+        if artworks[category] != '':
+            suma += float(artworks[category])
+    return round(suma,4)
+#-------------------------------------------------------------------------------------------------------------------------
+
+#Aux
+#-------------------------------------------------------------------------------------------------------------------------
 def getArtists(catalog,artwork):
     list_tutu = artwork["ConstituentID"].replace("[","").replace("]","").replace(" ","").split(",")
     list_names = []
@@ -266,6 +351,7 @@ def getArtists(catalog,artwork):
         artist_clean = artist["Artistinfo"]
         list_names.append(artist_clean["DisplayName"])
     return list_names
+#-------------------------------------------------------------------------------------------------------------------------
 # Funciones para creacion de datos
 
 def newArtist(artistid):
@@ -296,6 +382,15 @@ def newMedium():
     medium = {"Artworks": None}
     medium['Artworks'] = lt.newList('ARRAY_LIST', compareArtworkMedium)
     return medium
+
+def newDepartment():
+    """
+    Esta funcion crea la estructura de obras de arte asociados
+    a un medio.
+    """
+    department = {"Artworks": None}
+    department['Artworks'] = lt.newList('ARRAY_LIST', compareArtworkMedium)
+    return department
 
 def newArtistDate():
     Date = {"Artists": None}
@@ -378,7 +473,12 @@ def cmpArtistsDate(date1, date):
         return 0
     else:
         return -1
+def compareprice(p1,p2):
+    return (float(p1['Price']) > float(p2['Price']))
 
+def compareage(a1,a2):
+    if a1['Date'] != '' and a1['Date'] != '0' and a2['Date'] != '' and a2['Date'] != '0':
+        return (int(a1['Date']) < int(a2['Date']))
 # Funciones de ordenamiento
 
 def sortByYears(list_artworks):

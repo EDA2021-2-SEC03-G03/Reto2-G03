@@ -102,6 +102,12 @@ def getArtworksNationality(catalog):
 def getArtworksOneNat(catalog, nationality):
     return model.getArtworksOneNat(catalog, nationality)
 #---------------------------------------------------------------
+#Req 5
+#---------------------------------------------------------------
+def getArtworksByDepartment(catalog,dep):
+    return model.getArtworksByDepartment(catalog,dep)
+
+#---------------------------------------------------------------
 #Req 1
 def getArtistByDate(catalog, anoInicial, anoFinal):
     return model.getArtistByDate(catalog, anoInicial, anoFinal)

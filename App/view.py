@@ -132,6 +132,35 @@ while True:
             print(str(artwork["Title"]) +', '+ str(artwork["DateAcquired"]) +', '+ str(artwork["Medium"])+', '+str(artwork["Dimensions"]) + ','+ str(artists))
         print("--------------------------------------------------------------------------")
         print("Tiempo utilizado en el ordenamiento: " + str(DatesA[1]) + " Milisegundos")
+    elif int(inputs[0]) == 6:
+        #Req5:
+        dep = input('Ingrese el departamento del museo: ').lower()
+        DatesA = controller.getArtworksByDepartment(catalog,dep.lower())
+        print('The MoMA is going to transport ' +str(lt.size(DatesA[0]))+ ' artifacts from Drawings and Prints')
+        print("REMEMBER! NOT all MoMA's data is complete!!!... These are estimates.")
+        print("Estimated cargo weight (kg): " + str(DatesA[2]))
+        print("Estimated cargo cost (USD): "+ str(DatesA[3]))
+        print("--------------------------------------------------------------------------")
+        print("Top 5 oldest artworks to transport: ")
+        top5a = lt.subList(DatesA[1],1,5)
+        top5p = lt.subList(DatesA[0],1,5)
+        i = 1
+        for item in lt.iterator(top5a): 
+                      
+            lisArtist = controller.getArtists(catalog,item)
+            print(str(i) +'. Title: '+ str(item["Title"]) +', Artists: ' +str(lisArtist)+ ', Date: ' + str(item["Date"]) + ', Medium: ' + str(item["Medium"]) +', Cost of transportation: ' 
+            + str(item["Price"]) + ',Dimensions: ' + str(item["Dimensions"]))
+            i+=1
+        print("--------------------------------------------------------------------------")
+        print("Top 5 most expensive artworks to transport: ")
+        i = 1
+        for item in lt.iterator(top5p):  
+            lisArtist = controller.getArtists(catalog,item)
+            print(str(i) +'. Title: '+ str(item["Title"]) +', Artists: ' +str(lisArtist)+ ', Date: ' + str(item["Date"]) + ', Medium: ' + str(item["Medium"]) +', Cost of transportation: ' 
+            + str(item["Price"]) + ',Dimensions: ' + str(item["Dimensions"]))
+            i += 1
+        print("--------------------------------------------------------------------------")
+        print("Tiempo utilizado en el ordenamiento: " + str(DatesA[4]) + " Milisegundos")
     else:
         sys.exit(0)
 sys.exit(0)
