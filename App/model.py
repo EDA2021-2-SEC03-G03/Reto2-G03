@@ -228,6 +228,7 @@ def getArtworkofArtist(catalog, artistID):
     return None
 
 #Req 1
+#--------------------------------------------------------------------------------------------------------------------------
 def getArtistByDate(catalog, anoInicial, anoFinal):
     start_time = time.process_time()
     
@@ -240,6 +241,18 @@ def getArtistByDate(catalog, anoInicial, anoFinal):
     stop_time = time.process_time()
     elapsed_time_mseg = (stop_time - start_time)*1000        
     return list_artistDate, elapsed_time_mseg
+
+#Req 2:
+#--------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+#Req 3:
+#--------------------------------------------------------------------------------------------------------------------------
+
+
+
       
 #Req 4:
 #--------------------------------------------------------------------------------------------------------------------------
