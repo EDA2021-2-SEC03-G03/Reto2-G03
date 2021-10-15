@@ -71,6 +71,7 @@ while True:
         stop_time = time.process_time()
         elapsed_time_mseg = (stop_time - start_time)*1000
         print("El tiempo utilizado es de: "+str(elapsed_time_mseg)+ " milisegundos")
+        model.getArtworkNationality(catalog)
         
 
     elif int(inputs[0]) == 2:
@@ -93,7 +94,7 @@ while True:
         #DatesA = controller.getArtistByDate(catalog, anoInicial, anoFinal)
         
     elif int(inputs[0]) == 3:
-        artws = controller.getArtworksNationality(catalog, nat)
+        artws = controller.getArtworksNationality(catalog)
         model.getArtworkNationality(catalog, " ")
         if lt.size(artws) < n_artworks:
             n_artworks = lt.size(artws)
@@ -101,7 +102,36 @@ while True:
         print('Las ' + str(n_artworks) + ' obras más antiguas del medio "' + medium + '" son:')
         for artws in lt.iterator(artw_sublist):
             print(artws)
-
+    elif int(inputs[0]) == 5:
+        DatesA = controller.getArtworksNationality(catalog)
+        i = 1
+        top10 = lt.subList(DatesA[0],1,10)
+        print("--------------------------------------------------------------------------")
+        print("TOP 10 Nationalities")
+        print("--------------------------------------------------------------------------")
+        for item in lt.iterator(top10):           
+            
+            print(str(i) +'. '+ str(item["Nationality"]) +' with '+ str(item["NumbArtworks"]) + " Artworks")
+            i+=1
+        firtsplace= lt.getElement(top10,1)
+        print("--------------------------------------------------------------------------")
+        print("ARTWORKS FROM " + str(firtsplace["Nationality"]).upper())
+        list_needed = controller.getArtworksOneNat(catalog, firtsplace["Nationality"])
+        first_three = lt.subList(list_needed,1,3)
+        size_needed = lt.size(list_needed)
+        last_three = lt.subList(list_needed,size_needed-3,3)
+        print("--------------------------------------------------------------------------")
+        print("First three")
+        for artwork in lt.iterator(first_three):
+            artists = controller.getArtists(catalog,artwork)
+            print(str(artwork["Title"]) +', '+ str(artwork["DateAcquired"]) +', '+ str(artwork["Medium"])+', '+str(artwork["Dimensions"]) + ','+ str(artists))
+        print("--------------------------------------------------------------------------")
+        print("Last three")
+        for artwork in lt.iterator(last_three):
+            artists = controller.getArtists(catalog,artwork)
+            print(str(artwork["Title"]) +', '+ str(artwork["DateAcquired"]) +', '+ str(artwork["Medium"])+', '+str(artwork["Dimensions"]) + ','+ str(artists))
+        print("--------------------------------------------------------------------------")
+        print("Tiempo utilizado en el ordenamiento: " + str(DatesA[1]) + " Milisegundos")
     else:
         sys.exit(0)
 sys.exit(0)

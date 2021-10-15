@@ -25,6 +25,7 @@
 """
 
 
+from DISClib.DataStructures.arraylist import size
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
@@ -171,8 +172,6 @@ def addArtistDate(catalog, beginDate, artists):
 
  
 def addArtistNationality(catalog,nationality,artist):
-    if nationality == None or nationality == "" or nationality == " " or nationality == "Nationality unknown" or nationality == "0":
-        nationality = "Unknown"
     mediums = catalog['ArtworkNationality']
     existmedium = mp.contains(mediums, nationality)
     artworks = getArtworkofArtist(catalog,artist["ConstituentID"])
@@ -224,15 +223,49 @@ def getArtistByDate(catalog, anoInicial, anoFinal):
     elapsed_time_mseg = (stop_time - start_time)*1000        
     return list_artistDate, elapsed_time_mseg
       
-#Lab 6:
-def getArtworkNationality(catalog, nationality):
+#Req 4:
+#--------------------------------------------------------------------------------------------------------------------------
+def getArtworkNationality(catalog):
+    start_time = time.process_time()
+    nationality_pop = lt.newList('ARRAY_LIST',comparenat)
+    artwork_value = mp.keySet(catalog['ArtworkNationality'])
+    for element in lt.iterator(artwork_value):
+        artist_value = mp.get(catalog['ArtworkNationality'], element)
+        number_artworks= me.getValue(artist_value)
+        tuple_nat = {"Nationality":element,"NumbArtworks":lt.size(number_artworks["Artworks"])}
+        lt.addLast(nationality_pop,tuple_nat)
+    unknowncorrection(nationality_pop)
+    sortByNationality(nationality_pop)
+    stop_time = time.process_time()
+    elapsed_time_mseg = (stop_time - start_time)*1000
+    return nationality_pop,elapsed_time_mseg
+def getArtworksOneNat(catalog, nationality):
     artist_value = mp.get(catalog['ArtworkNationality'], nationality)
     if artist_value:
         list_artworks= me.getValue(artist_value)
         return list_artworks['Artworks']
+    return None     
+def unknowncorrection(nationality_pop):
+    ombe1 = lt.isPresent(nationality_pop, "nationality unknown")
+    ayuda1 = lt.getElement(nationality_pop, ombe1)
+    lt.deleteElement(nationality_pop,ombe1)
+    ombe2 = lt.isPresent(nationality_pop, "")
+    ayuda2 = lt.getElement(nationality_pop, ombe2)
+    final_number = int(ayuda1["NumbArtworks"])+ int(ayuda2["NumbArtworks"])
+    tuple_corr = {"Nationality":"unknown", "NumbArtworks":str(final_number)}
+    lt.deleteElement(nationality_pop,ombe2)
+    lt.addLast(nationality_pop, tuple_corr)
     return None
-
-
+#-------------------------------------------------------------------------------------------------------------------------
+def getArtists(catalog,artwork):
+    list_tutu = artwork["ConstituentID"].replace("[","").replace("]","").replace(" ","").split(",")
+    list_names = []
+    for artistId in list_tutu:
+        pos = mp.get(catalog['ArtistID'],artistId)
+        artist = me.getValue(pos)
+        artist_clean = artist["Artistinfo"]
+        list_names.append(artist_clean["DisplayName"])
+    return list_names
 # Funciones para creacion de datos
 
 def newArtist(artistid):
@@ -329,8 +362,16 @@ def compareartistID(a1, artist):
     else:
         return -1  
 
+def comparenat(a1, a2):
+    if a1.lower() == a2['Nationality'].lower():
+        return 0
+    else:
+        return -1 
 def compareYears(year1, year2):
     return int(year1['Date']) < int(year2['Date'])
+
+def comparepeople(art1, art2):
+    return int(art1["NumbArtworks"]) > int(art2["NumbArtworks"])
 
 def cmpArtistsDate(date1, date):
     if str(date1) in str(date['BeginDate']):
@@ -342,4 +383,7 @@ def cmpArtistsDate(date1, date):
 
 def sortByYears(list_artworks):
     return ms.sort(list_artworks, compareYears)
+
+def sortByNationality(list_artworks):
+    return ms.sort(list_artworks, comparepeople)
 
