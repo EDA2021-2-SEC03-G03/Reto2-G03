@@ -146,7 +146,6 @@ while True:
         top5p = lt.subList(DatesA[0],1,5)
         i = 1
         for item in lt.iterator(top5a): 
-                      
             lisArtist = controller.getArtists(catalog,item)
             print(str(i) +'. Title: '+ str(item["Title"]) +', Artists: ' +str(lisArtist)+ ', Date: ' + str(item["Date"]) + ', Medium: ' + str(item["Medium"]) +', Cost of transportation: ' 
             + str(item["Price"]) + ',Dimensions: ' + str(item["Dimensions"]))
