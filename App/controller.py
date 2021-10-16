@@ -95,6 +95,20 @@ def loadArtworks(catalog):
 def getArtworksMedium(catalog, medium):
      artworks = model.getArtworksMedium(catalog, medium)
      return artworks
+
+#Req 1
+#---------------------------------------------------------------
+def getArtistByDate(catalog, anoInicial, anoFinal):
+    return model.getArtistByDate(catalog, anoInicial, anoFinal)
+
+#Req 2:
+#---------------------------------------------------------------
+def getArtworksByDateAcquired(catalog, Inicial, Final):
+    return model.getArtworksDate(catalog, Inicial, Final)
+
+#Req 3:
+#---------------------------------------------------------------
+
 #Req 4
 #---------------------------------------------------------------
 def getArtworksNationality(catalog):
@@ -108,9 +122,6 @@ def getArtworksByDepartment(catalog,dep):
     return model.getArtworksByDepartment(catalog,dep)
 
 #---------------------------------------------------------------
-#Req 1
-def getArtistByDate(catalog, anoInicial, anoFinal):
-    return model.getArtistByDate(catalog, anoInicial, anoFinal)
 
 #Aux
 #---------------------------------------------------------------

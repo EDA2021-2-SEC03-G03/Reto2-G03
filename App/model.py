@@ -53,27 +53,31 @@ def newCatalog():
     catalog['ArtworkMedium'] = mp.newMap(8000,
                                  maptype='CHAINING',
                                  loadfactor=4.0,
-                                 comparefunction=compareArtworkMedium)
+                                 comparefunction=compareCatalog)
     catalog['ArtistID'] = mp.newMap(34500,
                                  maptype='PROBING',
                                  loadfactor=0.5,
-                                 comparefunction=compareArtworkMedium)
+                                 comparefunction=compareCatalog)
     catalog['ArtworksofArtist'] = mp.newMap(15250,
                                  maptype='CHAINING',
                                  loadfactor=4.0,
-                                 comparefunction=compareArtworkMedium)
+                                 comparefunction=compareCatalog)
     catalog['ArtistsDates'] = mp.newMap(10000,
                                  maptype='PROBING',
                                  loadfactor=0.5,
-                                 comparefunction=compareArtworkMedium)
+                                 comparefunction=compareCatalog)
+    catalog['ArtworksDateAcquired'] = mp.newMap(10000,
+                                 maptype='CHAINING',
+                                 loadfactor=4.0,
+                                 comparefunction=compareCatalog)                            
     catalog['ArtworkNationality'] = mp.newMap(200,
                                  maptype='CHAINING',
                                  loadfactor=4.0,
-                                 comparefunction=compareArtworkMedium)
+                                 comparefunction=compareCatalog)
     catalog['ArtworkDepartment'] = mp.newMap(8000,
                                  maptype='CHAINING',
                                  loadfactor=4.0,
-                                 comparefunction=compareArtworkMedium)
+                                 comparefunction=compareCatalog)
 
     return catalog
 
@@ -194,6 +198,7 @@ def addArtistDate(catalog, beginDate, artists):
         mp.put(dates, beginDate, d)
     lt.addLast(d['Artist'], ArtistFiltrada)
 
+
  
 def addArtistNationality(catalog,nationality,artist):
     mediums = catalog['ArtworkNationality']
@@ -238,7 +243,7 @@ def getArtworkofArtist(catalog, artistID):
 def getArtistByDate(catalog, anoInicial, anoFinal):
     start_time = time.process_time()
     
-    list_artistDate = lt.newList('ARRAY_LIST', )
+    list_artistDate = lt.newList('ARRAY_LIST')
     for a in catalog['ArtistsDates']:
         if int(a['BeginDate']) >= anoInicial and int(a['BeginDate']) <= anoFinal and a['BeginDate'] != "" and a['BeginDate'] != 0:
                 lt.addLast(list_artistDate, a)
@@ -250,7 +255,35 @@ def getArtistByDate(catalog, anoInicial, anoFinal):
 
 #Req 2:
 #--------------------------------------------------------------------------------------------------------------------------
+def getArtworksDate(catalog, inicial, final):
+    start_time = time.process_time()
 
+
+    stop_time = time.process_time()
+    elapsed_time_mseg = (stop_time - start_time)*1000     
+    return elapsed_time_mseg
+
+"""
+def artworksByDate(catalog, inicial, final):
+    start_time = time.process_time()
+    artworksDate = lt.newList('ARRAY_LIST')
+
+    inicialDate = date.fromisoformat(inicial)
+    finalDate = date.fromisoformat(final)
+
+    for a in lt.iterator(catalog['ArtworksDateAcquired']):
+        if a['DateAcquired'] != '' and a['DateAcquired']!='0':
+            a1 = date.fromisoformat(a['DateAcquired'])
+            if a1 >= inicialDate and a1 <= finalDate and a1 != '' and a1!='0':
+                lt.addLast(artworksDate, a)
+                
+
+    sort_DateAcquired = sortDateAcquired(artworksDate)
+    stop_time = time.process_time()
+    elapsed_time_mseg = (stop_time - start_time)*1000
+
+    return sort_DateAcquired, elapsed_time_mseg
+"""
 
 
 
@@ -393,7 +426,7 @@ def newMedium():
     a un medio.
     """
     medium = {"Artworks": None}
-    medium['Artworks'] = lt.newList('ARRAY_LIST', compareArtworkMedium)
+    medium['Artworks'] = lt.newList('ARRAY_LIST', compareCatalog)
     return medium
 
 def newDepartment():
@@ -402,12 +435,12 @@ def newDepartment():
     a un medio.
     """
     department = {"Artworks": None}
-    department['Artworks'] = lt.newList('ARRAY_LIST', compareArtworkMedium)
+    department['Artworks'] = lt.newList('ARRAY_LIST', compareCatalog)
     return department
 
 def newArtistDate():
     Date = {"Artists": None}
-    Date['Artists'] = lt.newList('ARRAY_LIST', compareArtworkMedium)
+    Date['Artists'] = lt.newList('ARRAY_LIST', compareCatalog)
     return Date
 
 def newArtworkofArtist():
@@ -416,7 +449,7 @@ def newArtworkofArtist():
     a un ConstituentID.
     """
     medium = {"Artworks": None}
-    medium['Artworks'] = lt.newList('ARRAY_LIST', compareArtworkMedium)
+    medium['Artworks'] = lt.newList('ARRAY_LIST', compareCatalog)
     return medium
 
 def newNationality():
@@ -425,7 +458,7 @@ def newNationality():
     a un ConstituentID.
     """
     medium = {"Artworks": None}
-    medium['Artworks'] = lt.newList('ARRAY_LIST', compareArtworkMedium)
+    medium['Artworks'] = lt.newList('ARRAY_LIST', compareCatalog)
     return medium
 
 def newArtistid():
@@ -447,11 +480,11 @@ def compareartists(a1, a2):
     else:
         return 1
     
-def compareArtworkMedium(medium, entry):
-    mediumentry = me.getKey(entry)
-    if (medium == mediumentry):
+def compareCatalog(category, entry):
+    categoryentry = me.getKey(entry)
+    if (category == categoryentry):
         return 0
-    elif (medium > mediumentry):
+    elif (category > categoryentry):
         return 1
     else:
         return -1 
