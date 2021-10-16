@@ -164,12 +164,6 @@ def addArtworkMedium(catalog, mediumName, artwork):
     lt.addLast(medium['Artworks'], ArtworkFiltrada)
 
 def addArtworkDepartment(catalog, departmentName, artwork):
-
-    ArtworkFiltrada = {'ObjectID': (artwork['ObjectID']).replace(" ", ""), 
-                  'Title': (artwork['Title']).lower(),
-                  'ConstituentID': (artwork['ConstituentID']).replace(" ", ""),
-                  'Date': artwork['Date'],
-                  'Medium': (artwork['Medium']).lower(),}
     
     mediums = catalog['ArtworkDepartment']
     existmedium = mp.contains(mediums, departmentName)
@@ -179,7 +173,7 @@ def addArtworkDepartment(catalog, departmentName, artwork):
     else:
         medium = newDepartment()
         mp.put(mediums, departmentName, medium)
-    lt.addLast(medium['Artworks'], ArtworkFiltrada)
+    lt.addLast(medium['Artworks'], artwork)
 
 def addArtistDate(catalog, beginDate, artists):
     ArtistFiltrada = {'DisplayName': artists['DisplayName'], 
@@ -335,13 +329,12 @@ def getArtworksByDepartment(catalog, department):
     artist_value = mp.get(catalog['ArtworkDepartment'], department)
     if artist_value:
         list_artworks= me.getValue(artist_value)
-        print(list_artworks)
         listaconprecio = precioest(list_artworks)
-        pesoestim = pesoest(list_artworks, "Weight")
-        print(listaconprecio)
+        pesoestim = pesoest(list_artworks, "Weight (kg)")
         precioestim = pesoest(list_artworks, "Price")
-        sorted_listbyprice = ms.sort(listaconprecio, compareprice)
-        artworkingsub = lt.subList(listaconprecio,1, lt.size(list_artworks))
+        sorted_listbyprice = ms.sort(listaconprecio["Artworks"], compareprice)
+        print(sorted_listbyprice.keys())
+        artworkingsub = lt.subList(listaconprecio["Artworks"],1, lt.size(list_artworks["Artworks"]))
         sorted_listbyage = ms.sort(artworkingsub, compareage)
         stop_time = time.process_time()
         elapsed_time_mseg = (stop_time - start_time)*1000
@@ -354,22 +347,22 @@ def getArtworksByDepartment(catalog, department):
      
 def precioest(ArtworkinCategory):
     
-    for artworks in lt.iterator(ArtworkinCategory):
-        if artworks["Weight"] == '':
+    for artworks in lt.iterator(ArtworkinCategory["Artworks"]):
+        if artworks["Weight (kg)"] == '':
             porPeso = 0
         else:
-            porPeso = round(72 * float(artworks["Weight"]),4)
-        if (artworks["Height"] == '' or artworks["Width"] == '') and artworks["Diameter"] == '':
+            porPeso = round(72 * float(artworks["Weight (kg)"]),4)
+        if (artworks["Height (cm)"] == '' or artworks["Width (cm)"] == '') and artworks["Diameter (cm)"] == '':
             porArea = 0
-        elif artworks["Diameter"] != '':
-            radius = float(artworks["Diameter"])/200
+        elif artworks["Diameter (cm)"] != '':
+            radius = float(artworks["Diameter (cm)"])/200
             porArea = round((radius)**2*(3.1415)*72, 4)
         else: 
-            porArea = round(((float(artworks["Height"])*float(artworks["Width"]))/ 10000)*72,4)
-        if (artworks["Height"] == '' or artworks["Width"] == '' or artworks["Length"] == ''):
+            porArea = round(((float(artworks["Height (cm)"])*float(artworks["Width (cm)"]))/ 10000)*72,4)
+        if (artworks["Height (cm)"] == '' or artworks["Width (cm)"] == '' or artworks["Length (cm)"] == ''):
             porVol = 0
         else:
-            porVol = round(((float(artworks["Height"])*float(artworks["Width"])*float(artworks["Length"]))/ 1000000)*72,4)
+            porVol = round(((float(artworks["Height (cm)"])*float(artworks["Width (cm)"])*float(artworks["Length (cm)"]))/ 1000000)*72,4)
 
         if porVol == 0 and porArea == 0 and porPeso == 0:
             precio_final = 48
@@ -380,7 +373,7 @@ def precioest(ArtworkinCategory):
 
 def pesoest(ArtworkinCategory, category):
     suma = 0
-    for artworks in lt.iterator(ArtworkinCategory):
+    for artworks in lt.iterator(ArtworkinCategory["Artworks"]):
         if artworks[category] != '':
             suma += float(artworks[category])
     return round(suma,4)
