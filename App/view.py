@@ -130,33 +130,6 @@ while True:
         #Louise Bourgeois
         Artistname = input('Ingrese el nombre del artista: ') 
         ArtworkTecnique = controller.getArtworksMedium(catalog, Artistname)
-        print("Tiempo utilizado en el ordenamiento: " + str(ArtworkTecnique[2]) + " Milisegundos")
-        for artist in lt.iterator(catalog['Artists']):
-            if artist['DisplayName'] == Artistname:
-                artist_id = artist['ConstituentID']
-                print(Artistname + ' with MoMA ID ' + str(artist_id) + ' has ' + ' pieces in his/her name at the museum.')
-        print('There are ' + str(ArtworkTecnique[1]) + ' different mediums/tecniques in his/her work.')
-                
-        countA = 0
-        for tec in lt.iterator(ArtworkTecnique[0]):
-            countA += lt.size(tec['Artworks'])
-        
-        sort_list = ArtworkTecnique[0]
-        Medium = lt.getElement(sort_list, 1)
-        medium = Medium['Medium']
-        mayorM = lt.size(Medium['Artworks'])
-        obras = Medium['Artworks']
-
-        print('His/Her most used Medium/Tecnique is ' + medium + ' with ' + str(mayorM) + ' pieces')
-        print('List of the artworks of the most used tecnique/medium:')
-        print('Fisrt three artworks: ')
-        print(obras['elements'][0:3])
-        print('Last three artworks: ')
-        print(obras['elements'][-3:])
-
-        """
-        Artistname = input('Ingrese el nombre del artista: ')
-        ArtworkTecnique = controller.getArtistByTecnique(catalog, Artistname)
         for artist in lt.iterator(catalog['Artists']):
             if artist['DisplayName'] == Artistname:
                 artist_id = artist['ConstituentID']
@@ -179,8 +152,10 @@ while True:
 
         print('His/Her most used Medium/Tecnique is ' + str(medium) + ' with ' + str(mayorM) + ' pieces')
         print('List of the artworks of the most used tecnique/medium:')
-        print(obras)
-        """
+        print('Fisrt three artworks: ')
+        print(obras['elements'][0:3])
+        print('Last three artworks: ')
+        print(obras['elements'][-3:])
 
 
     elif int(inputs[0]) == 5:
