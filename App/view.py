@@ -64,7 +64,6 @@ while True:
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
         print("Cargando información de los archivos ....")
-        #listType = input('Ingrese el tipo de lista que quiere implementar (ARRAY_LIST o LINKED_LIST): ').upper()
         catalog = controller.initCatalog()
         start_time = time.process_time()
         controller.loadData(catalog)
@@ -72,6 +71,7 @@ while True:
         elapsed_time_mseg = (stop_time - start_time)*1000
         print("El tiempo utilizado es de: "+str(elapsed_time_mseg)+ " milisegundos")
         model.getArtworkNationality(catalog)
+
         
     #Lab
     #elif int(inputs[0]) == 2:
@@ -86,13 +86,6 @@ while True:
         #for artws in lt.iterator(artw_sublist):
             #print(artws)
 
-    elif int(inputs[0]) == 2:
-
-        #Req 1
-        anoInicial = int(input('Ingresa el año inicial del rango: '))
-        anoFinal = int(input('Ingrese el año final del rango: '))
-        DatesA = controller.getArtistByDate(catalog, anoInicial, anoFinal)
-        
     #elif int(inputs[0]) == 3:
         #artws = controller.getArtworksNationality(catalog)
         #model.getArtworkNationality(catalog, " ")
@@ -103,27 +96,67 @@ while True:
         #for artws in lt.iterator(artw_sublist):
             #print(artws)
 
+    elif int(inputs[0]) == 2:
+
+        #Req 1
+        anoInicial = int(input('Ingresa el año inicial del rango: '))
+        anoFinal = int(input('Ingrese el año final del rango: '))
+        DatesA = controller.getArtistByDate(catalog, anoInicial, anoFinal)
+        print("Tiempo utilizado en el ordenamiento: " + str(DatesA[1]) + " Milisegundos" )
+        print('There are ' + str(lt.size(DatesA[0])) + ' artists born between ' + str(anoInicial) + ' and ' + str(anoFinal))
+        print("First three artists:")
+        print(DatesA[0]['elements'][0:3])
+        print("Last three artists: ")
+        print(DatesA[0]['elements'][-3:])
+
+
     elif int(inputs[0]) == 3:
         #Req 2: 
         Inicial = input('Ingresa la fecha inicial del rango, en el formato AAAA-MM-DD: ')
         Final = input('Ingrese la fecha final del rango, en el formato AAAA-MM-DD: ')
         datesArtworks = controller.getArtworksByDateAcquired(catalog, Inicial, Final)
+        print('The MoMA acquired ' + str(lt.size(datesArtworks[0])) + ' unique pieces between ' + Inicial + ' and ' + Final)
+        print('And purchased ' + str(controller.getartworkPurchased(datesArtworks[0])) + ' of them.')
+        print("First three elements: ")
+        print(datesArtworks[0]['elements'][0:3])
+        print("Last three elements: ")
+        print(datesArtworks[0]['elements'][-3:])
+        print("Tiempo utilizado en el ordenamiento: " + str(datesArtworks[1]) + " Milisegundos")
 
-        """
-        Inicial = input('Ingresa la fecha inicial del rango, en el formato AAAA-MM-DD: ')
-                Final = input('Ingrese la fecha final del rango, en el formato AAAA-MM-DD: ')
-                datesArtworks = controller.getArtworksByDateAcquired(catalog, Inicial, Final)
-                print('The MoMA acquired ' + str(lt.size(datesArtworks[0])) + ' unique pieces between ' + Inicial + ' and ' + Final)
-                print('And purchased ' + str(controller.getartworkPurchased(datesArtworks[0])) + ' of them.')
-                print("First three elements: ")
-                print(datesArtworks[0]['elements'][0:3])
-                print("Last three elements: ")
-                print(datesArtworks[0]['elements'][-3:])
-                print("Tiempo utilizado en el ordenamiento: " + str(datesArtworks[1]) + " Milisegundos")
 
-        """
+    
+    elif int(inputs[0]) == 4:
+        #Req 3:
+        Artistname = input('Ingrese el nombre del artista: ') 
+        ArtworkTecnique = controller.getArtworksMedium(catalog, Artistname)
+        countA = 0
+        for tec in lt.iterator(ArtworkTecnique[0]):
+            countA += lt.size(tec['Artworks'])
         
+        sort_list = ArtworkTecnique[0]
+        Medium = lt.getElement(sort_list, 1)
+        medium = Medium['Medium']
+        mayorM = lt.size(Medium['Artworks'])
+        obras = Medium['Artworks']
+        for artist in lt.iterator(catalog['Artists']):
+            if artist['DisplayName'] == Artistname:
+                artist_id = artist['ConstituentID']
+
+        print("Tiempo utilizado en el ordenamiento: " + str(ArtworkTecnique[2]) + " Milisegundos")
+        print(Artistname + ' with MoMA ID ' + str(artist_id) + ' has ' + ' pieces in his/her name at the museum.')
+        print('There are ' + str(ArtworkTecnique[1]) + ' different mediums/tecniques in his/her work.')
+
+        print('His/Her most used Medium/Tecnique is ' + medium + ' with ' + str(mayorM) + ' pieces')
+        print('List of the artworks of the most used tecnique/medium:')
+        print('Fisrt three artworks: ')
+        print(obras['elements'][0:3])
+        print('Last three artworks: ')
+        print(obras['elements'][-3:])
+
+
+
     elif int(inputs[0]) == 5:
+        #Req 4:
         DatesA = controller.getArtworksNationality(catalog)
         i = 1
         top10 = lt.subList(DatesA[0],1,10)
@@ -155,7 +188,7 @@ while True:
         print("Tiempo utilizado en el ordenamiento: " + str(DatesA[1]) + " Milisegundos")
 
     elif int(inputs[0]) == 6:
-        #Req5:
+        #Req 5:
         dep = input('Ingrese el departamento del museo: ').lower()
         DatesA = controller.getArtworksByDepartment(catalog,dep.lower())
         print('The MoMA is going to transport ' +str(lt.size(DatesA[0]))+ ' artifacts from Drawings and Prints')
