@@ -127,8 +127,16 @@ while True:
     
     elif int(inputs[0]) == 4:
         #Req 3:
+        #Louise Bourgeois
         Artistname = input('Ingrese el nombre del artista: ') 
         ArtworkTecnique = controller.getArtworksMedium(catalog, Artistname)
+        print("Tiempo utilizado en el ordenamiento: " + str(ArtworkTecnique[2]) + " Milisegundos")
+        for artist in lt.iterator(catalog['Artists']):
+            if artist['DisplayName'] == Artistname:
+                artist_id = artist['ConstituentID']
+                print(Artistname + ' with MoMA ID ' + str(artist_id) + ' has ' + ' pieces in his/her name at the museum.')
+        print('There are ' + str(ArtworkTecnique[1]) + ' different mediums/tecniques in his/her work.')
+                
         countA = 0
         for tec in lt.iterator(ArtworkTecnique[0]):
             countA += lt.size(tec['Artworks'])
@@ -138,13 +146,6 @@ while True:
         medium = Medium['Medium']
         mayorM = lt.size(Medium['Artworks'])
         obras = Medium['Artworks']
-        for artist in lt.iterator(catalog['Artists']):
-            if artist['DisplayName'] == Artistname:
-                artist_id = artist['ConstituentID']
-
-        print("Tiempo utilizado en el ordenamiento: " + str(ArtworkTecnique[2]) + " Milisegundos")
-        print(Artistname + ' with MoMA ID ' + str(artist_id) + ' has ' + ' pieces in his/her name at the museum.')
-        print('There are ' + str(ArtworkTecnique[1]) + ' different mediums/tecniques in his/her work.')
 
         print('His/Her most used Medium/Tecnique is ' + medium + ' with ' + str(mayorM) + ' pieces')
         print('List of the artworks of the most used tecnique/medium:')
@@ -153,6 +154,33 @@ while True:
         print('Last three artworks: ')
         print(obras['elements'][-3:])
 
+        """
+        Artistname = input('Ingrese el nombre del artista: ')
+        ArtworkTecnique = controller.getArtistByTecnique(catalog, Artistname)
+        for artist in lt.iterator(catalog['Artists']):
+            if artist['DisplayName'] == Artistname:
+                artist_id = artist['ConstituentID']
+        countM = lt.size(ArtworkTecnique[0])
+        countA = 0
+        for tec in lt.iterator(ArtworkTecnique[0]):
+            countA += lt.size(tec['Artworks'])
+        
+        sort_list = ArtworkTecnique[0]
+        Medium = lt.getElement(sort_list, 1)
+        medium = Medium['MediumName']
+
+        mayorM = lt.size(Medium['Artworks'])
+        obras = Medium['Artworks']
+        
+        print("Tiempo utilizado en el ordenamiento: " + str(ArtworkTecnique[1]) + " Milisegundos")  
+        print(Artistname + ' with MoMA ID ' + str(artist_id) + ' has ' + str(countA) + ' pieces in his/her name at the museum.')
+        print('There are ' + str(countM) + ' different mediums/tecniques in his/her work.')
+
+
+        print('His/Her most used Medium/Tecnique is ' + str(medium) + ' with ' + str(mayorM) + ' pieces')
+        print('List of the artworks of the most used tecnique/medium:')
+        print(obras)
+        """
 
 
     elif int(inputs[0]) == 5:

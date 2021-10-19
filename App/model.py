@@ -25,6 +25,7 @@
 """
 
 
+from App.view import ArtworkTecnique
 from DISClib.DataStructures.arraylist import size
 import config as cf
 from DISClib.ADT import list as lt
@@ -71,8 +72,8 @@ def newCatalog():
                                  loadfactor=0.5,
                                  comparefunction=compareCatalog)                            
     catalog['ArtworkNationality'] = mp.newMap(200,
-                                 maptype='PROBING',
-                                 loadfactor=0.5,
+                                 maptype='CHAINING',
+                                 loadfactor=4.0,
                                  comparefunction=compareCatalog)
     catalog['ArtworkDepartment'] = mp.newMap(8000,
                                  maptype='PROBING',
@@ -120,8 +121,8 @@ def addArtwork(catalog, artwork):
     list_tutu = artwork["ConstituentID"].replace("[","").replace("]","").replace(" ","").split(",")
     for artist in list_tutu:
         addArtworkofArtist(catalog, artist,artwork)
-        AddArtworkMedium(catalog, artist, artwork)
     addArtworksDateAcquired(catalog, listArtwork['DateAcquired'], artwork)
+    AddArtworkMedium(catalog, listArtwork['Medium'], artwork)
     addArtworkDepartment(catalog, listArtwork['Department'], artwork)
     
 def addArtistID(catalog, constituentID, artist):
@@ -169,8 +170,8 @@ def addArtistDate(catalog, beginDate, artists):
 def addArtworksDateAcquired(catalog, dateAcquired, artwork):
 
     if artwork['DateAcquired'] != '' and artwork['DateAcquired']!='0':
-        dateAcquired.split('-')
-        year = int(dateAcquired[0])
+        dateSplit = dateAcquired.split('-')
+        year = int(dateSplit[0])
         artworkFiltrada = {'ObjectID': (artwork['ObjectID']).replace(" ", ""), 
                     'Title': (artwork['Title']).lower(),
                     'ConstituentID': (artwork['ConstituentID']).replace(" ", ""),
@@ -190,6 +191,23 @@ def addArtworksDateAcquired(catalog, dateAcquired, artwork):
             mp.put(datesAc, year, d)
         lt.addLast(d['Artworks'], artworkFiltrada)
 
+def AddArtworkMedium(catalog, mediumName, artwork):
+    mediums = catalog['ArtworkMedium']
+    existmedium = mp.contains(mediums, mediumName)
+    artworks = getArtworkofArtist(catalog, artwork["ConstituentID"])
+    if existmedium:
+        entry = mp.get(mediums, mediumName)
+        medium = me.getValue(entry)
+    else:
+        medium = newMedium()
+        mp.put(mediums, mediumName, medium)
+    if artworks != None:
+        for artwork in lt.iterator(artworks):   
+            lt.addLast(medium['Artworks'], artwork)
+    
+
+"""
+
 def AddArtworkMedium(catalog, artist_id, artwork):
     artists = catalog['Artists']
     posartist = lt.isPresent(artists,artist_id)
@@ -198,17 +216,17 @@ def AddArtworkMedium(catalog, artist_id, artwork):
         lt.addLast(artist['Artworks'], artwork)
         lt.addLast(artwork['Artist'], artist['DisplayName'])
 
-        ArtistMedium = catalog['ArtworkMedium']   
-        existartist = mp.contains(ArtistMedium, artist['DisplayName'])
-        if existartist:
-            entry = mp.get(ArtistMedium, artist['DisplayName'])
-            artist = me.getValue(entry)
-            addMedium(catalog, artwork['Medium'], artwork)
-        else:
-            medium = newArtistMedium()
-            addMedium(catalog, artwork['Medium'], artwork)
-            mp.put(ArtistMedium, artwork['Medium'], medium)
-    
+    ArtistMedium = catalog['ArtworkMedium']   
+    existartist = mp.contains(ArtistMedium, artist['DisplayName'])
+    if existartist:
+        entry = mp.get(ArtistMedium, artist['DisplayName'])
+        artist = me.getValue(entry)
+        addMedium(catalog, artwork['Medium'], artwork)
+    else:
+        medium = newArtistMedium()
+        addMedium(catalog, artwork['Medium'], artwork)
+        mp.put(ArtistMedium, artwork['Medium'], medium)
+"""
 
 def addMedium(catalog, mediumName, artwork):
 
@@ -254,6 +272,7 @@ def addArtistNationality(catalog,nationality,artist):
     if artworks != None:
         for artwork in lt.iterator(artworks):   
             lt.addLast(medium['Artworks'], artwork)
+
 # Funciones de consulta
 
 #Lab 6:
@@ -296,8 +315,6 @@ def getArtistByDate(catalog, anoInicial, anoFinal):
         
         i += 1
 
-    #sortlist_artistDate = sortArtistsDate(list_artistDate)
-
     stop_time = time.process_time()
     elapsed_time_mseg = (stop_time - start_time)*1000        
     return list_artistDate, elapsed_time_mseg
@@ -317,8 +334,9 @@ def getArtworksDate(catalog, inicial, final):
     finalSplit = final.split('-')
 
     i = int(inicialSplit[0]) 
+    print(i)
     while i >= int(inicialSplit[0]) and i <= int(finalSplit[0]):
-        print(catalog['ArtworksDateAcquired'])
+        #print(catalog['ArtworksDateAcquired'])
         artwork_value = mp.get(catalog['ArtworksDateAcquired'], i)
         if artwork_value:
             list_artwork= me.getValue(artwork_value)
@@ -347,47 +365,25 @@ def getartworkPurchased(datesArtworks):
 def getArtworksMedium(catalog, artistName):
     start_time = time.process_time()
     ArtistTecnique = lt.newList('ARRAY_LIST', cmpfunction=compATecnique)
-
-    num_medium = mp.size(catalog['ArtworkMedium'])
+    #artwork_value = mp.get(catalog['ArtworkMedium'], artistName)
     artwork_value = mp.keySet(catalog['ArtworkMedium'])
+    #if artwork_value:
+        #Total_artworks= me.getValue(artwork_value)
+        #print(Total_artworks)
     for element in lt.iterator(artwork_value):
         artist_value = mp.get(catalog['ArtworkMedium'], element)
         Total_artworks= me.getValue(artist_value)
-        tuple_medium = {'Medium':element,'TotalArtworks':lt.size(Total_artworks["Artworks"])}
-        lt.addLast(ArtistTecnique,tuple_medium)
+        listmedium = {'Medium':element,'Artworks':Total_artworks["Artworks"]}
+        #print(listmedium)
+        lt.addLast(ArtistTecnique, listmedium)
 
     sortByMedium(ArtistTecnique)
+    print(ArtistTecnique)
     stop_time = time.process_time()
     elapsed_time_mseg = (stop_time - start_time)*1000
 
-    return ArtistTecnique, num_medium, elapsed_time_mseg 
+    return ArtistTecnique, elapsed_time_mseg 
 
-
-"""
-def getArtistByTecnique(catalog, Artistname):
-    start_time = time.process_time()
-    ArtistTecnique = lt.newList('ARRAY_LIST', cmpfunction=compATecnique)
-    
-    for artists in lt.iterator(catalog['Artists']):
-        
-        if artists['DisplayName'] == Artistname:
-            for a in lt.iterator(artists['Artworks']):
-                tecnique = a['Medium']
-                pos = lt.isPresent(ArtistTecnique,tecnique)
-                if pos > 0:
-                    tec = lt.getElement(ArtistTecnique, pos)
-                    lt.addLast(tec['Artworks'], a)
-                else:
-                    tec = newTecnique(a['Medium'])
-                    lt.addLast(ArtistTecnique, tec)
-                lt.addLast(tec['Artworks'], a) 
-              
-    sort_list = ArtworkTecniqueSort(ArtistTecnique)
-    stop_time = time.process_time()
-    elapsed_time_mseg = (stop_time - start_time)*1000
-
-    return sort_list, elapsed_time_mseg
-"""
       
 #Req 4:
 #--------------------------------------------------------------------------------------------------------------------------
@@ -508,7 +504,7 @@ def newArtist(artistid):
 
 def newArtworkDateAcquired(year):
 
-    DateAcquired = {'Year': year, 'Artworks': None}
+    DateAcquired = {'Date': year, 'Artworks': None}
     DateAcquired['Artworks'] = lt.newList('ARRAY_LIST', compareCatalog)
     return DateAcquired
 
@@ -627,8 +623,8 @@ def cmpDateAcquired(Date1, Date2):
     if Date1['DateAcquired'] != '' and Date1['DateAcquired'] != '0' and Date2['DateAcquired'] != '0' and Date2['DateAcquired'] != '':
         return (date.fromisoformat(Date1['DateAcquired']) < date.fromisoformat(Date2['DateAcquired']))
 
-def compMedium(a1, a2):
-    return int(a1['TotalArtworks']) > int(a2['TotalArtworks'])
+def compMedium(tec1, tec2):
+    return lt.size(tec1['Artworks']) > lt.size(tec2['Artworks'])
 
 def comparepeople(art1, art2):
     return int(art1["NumbArtworks"]) > int(art2["NumbArtworks"])
