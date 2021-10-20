@@ -189,29 +189,7 @@ def addArtworksDateAcquired(catalog, dateAcquired, artwork):
             mp.put(datesAc, year, d)
         lt.addLast(d['Artworks'], artworkFiltrada)
 
-    
 
-"""
-
-def AddArtworkMedium(catalog, artist_id, artwork):
-    artists = catalog['Artists']
-    posartist = lt.isPresent(artists,artist_id)
-    if posartist > 0:
-        artist = lt.getElement(artists, posartist)
-        lt.addLast(artist['Artworks'], artwork)
-        lt.addLast(artwork['Artist'], artist['DisplayName'])
-
-        ArtistMedium = catalog['ArtworkMedium']   
-        existartist = mp.contains(ArtistMedium, artist['DisplayName'])
-        if existartist:
-            entry = mp.get(ArtistMedium, artist['DisplayName'])
-            artist = me.getValue(entry)
-            addMedium(catalog, artwork['Medium'], artwork)
-        else:
-            medium = newArtistMedium(artwork['Medium'])
-            addMedium(catalog, artwork['Medium'], artwork)
-            mp.put(ArtistMedium, artwork['Medium'], medium)
-"""
 def AddArtworkMedium(catalog, mediumName, artwork):
     mediums = catalog['ArtworkMedium']
     existmedium = mp.contains(mediums, mediumName)
@@ -270,22 +248,6 @@ def addArtistNationality(catalog,nationality,artist):
             lt.addLast(medium['Artworks'], artwork)
 
 # Funciones de consulta
-
-#Lab 6:
-def getArtworksMediumArtist(catalog, ArtistName):
-    medium = mp.get(catalog['ArtworkMedium'], ArtistName)
-    if medium:
-        list_artworks= me.getValue(medium)
-        sortByYears(list_artworks['Artworks'])
-        return list_artworks['Artworks']
-    return None
-
-def getArtistID(catalog, artistID):
-    artist_value = mp.get(catalog['ArtistID'], artistID)
-    if artist_value:
-        list_artworks= me.getValue(artist_value)
-        return list_artworks['Artistinfo']
-    return None
 
 def getArtworkofArtist(catalog, artistID):
     artist_value = mp.get(catalog['ArtworksofArtist'], artistID)
