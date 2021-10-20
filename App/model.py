@@ -292,7 +292,6 @@ def getArtworksDate(catalog, inicial, final):
     finalSplit = final.split('-')
 
     i = int(inicialSplit[0]) 
-    print(i)
     while i >= int(inicialSplit[0]) and i <= int(finalSplit[0]):
         #print(catalog['ArtworksDateAcquired'])
         artwork_value = mp.get(catalog['ArtworksDateAcquired'], i)
