@@ -25,7 +25,6 @@
 """
 
 
-from App.view import ArtworkTecnique
 from DISClib.DataStructures.arraylist import size
 import config as cf
 from DISClib.ADT import list as lt
@@ -46,8 +45,7 @@ los mismos.
 def newCatalog():
     
     catalog = {'Artwork': None,
-               'Artists': None,
-               'ArtworkMedium': None}
+               'Artists': None}
 
     catalog['Artists'] = lt.newList(cmpfunction=compareartists) 
     catalog['Artwork'] = lt.newList(cmpfunction=compareartworks)
@@ -121,8 +119,8 @@ def addArtwork(catalog, artwork):
     list_tutu = artwork["ConstituentID"].replace("[","").replace("]","").replace(" ","").split(",")
     for artist in list_tutu:
         addArtworkofArtist(catalog, artist,artwork)
+        #AddArtworkMedium(catalog, artist, artwork)
     addArtworksDateAcquired(catalog, listArtwork['DateAcquired'], artwork)
-    AddArtworkMedium(catalog, listArtwork['Medium'], artwork)
     addArtworkDepartment(catalog, listArtwork['Department'], artwork)
     
 def addArtistID(catalog, constituentID, artist):
@@ -191,19 +189,6 @@ def addArtworksDateAcquired(catalog, dateAcquired, artwork):
             mp.put(datesAc, year, d)
         lt.addLast(d['Artworks'], artworkFiltrada)
 
-def AddArtworkMedium(catalog, mediumName, artwork):
-    mediums = catalog['ArtworkMedium']
-    existmedium = mp.contains(mediums, mediumName)
-    artworks = getArtworkofArtist(catalog, artwork["ConstituentID"])
-    if existmedium:
-        entry = mp.get(mediums, mediumName)
-        medium = me.getValue(entry)
-    else:
-        medium = newMedium()
-        mp.put(mediums, mediumName, medium)
-    if artworks != None:
-        for artwork in lt.iterator(artworks):   
-            lt.addLast(medium['Artworks'], artwork)
     
 
 """
@@ -216,17 +201,28 @@ def AddArtworkMedium(catalog, artist_id, artwork):
         lt.addLast(artist['Artworks'], artwork)
         lt.addLast(artwork['Artist'], artist['DisplayName'])
 
-    ArtistMedium = catalog['ArtworkMedium']   
-    existartist = mp.contains(ArtistMedium, artist['DisplayName'])
-    if existartist:
-        entry = mp.get(ArtistMedium, artist['DisplayName'])
-        artist = me.getValue(entry)
-        addMedium(catalog, artwork['Medium'], artwork)
-    else:
-        medium = newArtistMedium()
-        addMedium(catalog, artwork['Medium'], artwork)
-        mp.put(ArtistMedium, artwork['Medium'], medium)
+        ArtistMedium = catalog['ArtworkMedium']   
+        existartist = mp.contains(ArtistMedium, artist['DisplayName'])
+        if existartist:
+            entry = mp.get(ArtistMedium, artist['DisplayName'])
+            artist = me.getValue(entry)
+            addMedium(catalog, artwork['Medium'], artwork)
+        else:
+            medium = newArtistMedium(artwork['Medium'])
+            addMedium(catalog, artwork['Medium'], artwork)
+            mp.put(ArtistMedium, artwork['Medium'], medium)
 """
+def AddArtworkMedium(catalog, mediumName, artwork):
+    mediums = catalog['ArtworkMedium']
+    existmedium = mp.contains(mediums, mediumName)
+    if existmedium:
+        entry = mp.get(mediums, mediumName)
+        medium = me.getValue(entry)
+    else:
+        medium = newMedium()
+        mp.put(mediums, mediumName, medium)
+    lt.addLast(medium['Artworks'], artwork)
+
 
 def addMedium(catalog, mediumName, artwork):
 
@@ -276,8 +272,8 @@ def addArtistNationality(catalog,nationality,artist):
 # Funciones de consulta
 
 #Lab 6:
-def getArtworksMedium(catalog, medium):
-    medium = mp.get(catalog['ArtworkMedium'], medium)
+def getArtworksMediumArtist(catalog, ArtistName):
+    medium = mp.get(catalog['ArtworkMedium'], ArtistName)
     if medium:
         list_artworks= me.getValue(medium)
         sortByYears(list_artworks['Artworks'])
@@ -362,29 +358,48 @@ def getartworkPurchased(datesArtworks):
 
 #Req 3:
 #--------------------------------------------------------------------------------------------------------------------------
-def getArtworksMedium(catalog, artistName):
+def getArtworksMediumOneArtist(catalog, artistName):
     start_time = time.process_time()
     ArtistTecnique = lt.newList('ARRAY_LIST', cmpfunction=compATecnique)
-    #artwork_value = mp.get(catalog['ArtworkMedium'], artistName)
-    artwork_value = mp.keySet(catalog['ArtworkMedium'])
-    #if artwork_value:
-        #Total_artworks= me.getValue(artwork_value)
-        #print(Total_artworks)
-    for element in lt.iterator(artwork_value):
-        artist_value = mp.get(catalog['ArtworkMedium'], element)
-        Total_artworks= me.getValue(artist_value)
-        listmedium = {'Medium':element,'Artworks':Total_artworks["Artworks"]}
-        #print(listmedium)
-        lt.addLast(ArtistTecnique, listmedium)
+    artistID = getartistIDbyName(catalog, artistName) #Buscar el ID del artista específico
+    artwork_value = mp.get(catalog['ArtworksofArtist'], artistID)
+    if artwork_value:
+        artworks= me.getValue(artwork_value)
+        getMediumOneArtist(catalog,artworks) #Crear el mnapa de los medios de un artista con sus obras 
+        artwork_value2 = mp.keySet(catalog['ArtworkMedium']) 
+        for element in lt.iterator(artwork_value2):
+            artist_value = mp.get(catalog['ArtworkMedium'], element)
+            number_artworks= me.getValue(artist_value) #Lista de obras de ese medio en específico
+            tuple_medium = {'Medium':element,'NumbArtworks':lt.size(number_artworks["Artworks"])} 
+            lt.addLast(ArtistTecnique, tuple_medium)
 
     sortByMedium(ArtistTecnique)
-    print(ArtistTecnique)
+    #print(ArtistTecnique)
     stop_time = time.process_time()
     elapsed_time_mseg = (stop_time - start_time)*1000
 
     return ArtistTecnique, elapsed_time_mseg 
 
-      
+def getartistIDbyName(catalog, artistName): #Sacar ID de un artista
+    for artist in lt.iterator(catalog["Artists"]):
+        #print(artist)
+        #print(artistName, artist['DisplayName'])
+        if artistName.lower() == (artist["DisplayName"]).lower():
+            return artist["ConstituentID"]
+    return None
+
+def getMediumOneArtist(catalog, artworks): #Creando el mapa de medios de un artista con sus obras
+    for artwork in lt.iterator(artworks['Artworks']):
+        AddArtworkMedium(catalog, artwork['Medium'], artwork)
+
+def getArtworkOneMedium(catalog, medium): #Sacar obras del medio más utilizado
+    artist_value = mp.get(catalog['ArtworkMedium'], medium)
+    if artist_value:
+        list_artworks = me.getValue(artist_value)
+        return list_artworks['Artworks']
+    return None
+
+
 #Req 4:
 #--------------------------------------------------------------------------------------------------------------------------
 def getArtworkNationality(catalog):
@@ -508,8 +523,8 @@ def newArtworkDateAcquired(year):
     DateAcquired['Artworks'] = lt.newList('ARRAY_LIST', compareCatalog)
     return DateAcquired
 
-def newArtistMedium():
-    ArtistMedium = {'Artworks': None}
+def newArtistMedium(medium):
+    ArtistMedium = {'Medium': medium, 'Artworks': None}
     ArtistMedium['Artworks'] = mp.newMap(100,
                                  maptype='PROBING',
                                  loadfactor=0.5,
@@ -624,7 +639,7 @@ def cmpDateAcquired(Date1, Date2):
         return (date.fromisoformat(Date1['DateAcquired']) < date.fromisoformat(Date2['DateAcquired']))
 
 def compMedium(tec1, tec2):
-    return lt.size(tec1['Artworks']) > lt.size(tec2['Artworks'])
+    return int(tec1['NumbArtworks']) > int(tec2['NumbArtworks'])
 
 def comparepeople(art1, art2):
     return int(art1["NumbArtworks"]) > int(art2["NumbArtworks"])

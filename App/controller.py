@@ -111,8 +111,11 @@ def getartworkPurchased(datesArtworks):
 
 #Req 3:
 #---------------------------------------------------------------
-def getArtworksMedium(catalog, artisName):
-    return model.getArtworksMedium(catalog, artisName)
+def getArtworksMediumOneArtist(catalog, Artistname):
+    return model.getArtworksMediumOneArtist(catalog, Artistname)
+
+def getArtworkOneMedium(catalog, medium):
+    return model.getArtworkOneMedium(catalog, medium)
 
 
 #Req 4
