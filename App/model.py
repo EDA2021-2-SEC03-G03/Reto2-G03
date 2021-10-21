@@ -326,7 +326,7 @@ def getArtworksMediumOneArtist(catalog, artistName):
     artwork_value = mp.get(catalog['ArtworksofArtist'], artistID)
     if artwork_value:
         artworks= me.getValue(artwork_value)
-        getMediumOneArtist(catalog,artworks) #Crear el mnapa de los medios de un artista con sus obras 
+        getMediumOneArtist(catalog,artworks) #Crear el mapa de los medios de un artista con sus obras 
         artwork_value2 = mp.keySet(catalog['ArtworkMedium']) 
         for element in lt.iterator(artwork_value2):
             artist_value = mp.get(catalog['ArtworkMedium'], element)
